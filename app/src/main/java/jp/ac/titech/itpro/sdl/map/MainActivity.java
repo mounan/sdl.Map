@@ -133,12 +133,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         }
         locationClient.requestLocationUpdates(request, callback, null);
-        locationClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>(){
-            @Override
-            public void onSuccess(Location location){
-
-            }
-        });
     }
 
     @Override
