@@ -5,6 +5,9 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,6 +26,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
     private final static String TAG = MainActivity.class.getSimpleName();
@@ -65,13 +69,19 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             public void onLocationResult(@NonNull LocationResult locationResult) {
                 Log.d(TAG, "onLocationResult");
                 Location location = locationResult.getLastLocation();
-                LatLng ll = new LatLng(location.getLatitude(), location.getLongitude());
-                infoView.setText(getString(R.string.latlng_format, ll.latitude, ll.longitude));
-                if (map == null) {
-                    Log.d(TAG, "onLocationResult: map == null");
-                    return;
-                }
-                map.animateCamera(CameraUpdateFactory.newLatLng(ll));
+                ImageButton currentPositionBtn = (ImageButton) findViewById(R.id.me_btn);
+                currentPositionBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        LatLng ll = new LatLng(location.getLatitude(), location.getLongitude());
+                        infoView.setText(getString(R.string.latlng_format, ll.latitude, ll.longitude));
+                        if (map == null) {
+                            Log.d(TAG, "onLocationResult: map == null");
+                            return;
+                        }
+                        map.animateCamera(CameraUpdateFactory.newLatLng(ll));
+                    }
+                });
             }
         };
     }
@@ -123,6 +133,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         }
         locationClient.requestLocationUpdates(request, callback, null);
+        locationClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>(){
+            @Override
+            public void onSuccess(Location location){
+
+            }
+        });
     }
 
     @Override
@@ -137,4 +153,5 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         Log.d(TAG, "stopLocationUpdate");
         locationClient.removeLocationUpdates(callback);
     }
+
 }
